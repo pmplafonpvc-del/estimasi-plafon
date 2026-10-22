@@ -1,0 +1,24 @@
+{
+  "name": "PM Plafon PVC — Estimasi",
+  "short_name": "PM Plafon",
+  "description": "Hitung rincian estimasi biaya pemasangan plafon PVC secara offline.",
+  "lang": "id",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f5f4",
+  "theme_color": "#0a8f4a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

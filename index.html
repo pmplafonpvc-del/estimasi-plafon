@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PM Plafon PVC — Estimasi</title>
+<meta name="description" content="Hitung rincian estimasi biaya pemasangan plafon PVC — bisa dipakai offline.">
+<meta name="theme-color" content="#0a8f4a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PM Plafon">
+<style>
+:root{
+  --bg:#f3f5f4;--card:#fff;--ink:#1b2320;--muted:#66726d;--line:#dbe2df;
+  --accent:#0a8f4a;--accent-ink:#fff;--soft:#e3f4ea;--danger:#b42318;--warn-bg:#fff6e0;--warn:#8a5a00;
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0f1412;--card:#18201d;--ink:#e6ece9;--muted:#9aa6a1;--line:#2b3531;
+    --accent:#3cc47a;--accent-ink:#04200f;--soft:#183026;--danger:#f0786b;--warn-bg:#33290f;--warn:#f2c46b}
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+button,input,select,textarea{font:inherit;color:inherit}
+header.top{position:sticky;top:0;z-index:20;background:var(--card);color:var(--ink);border-bottom:1px solid var(--line);padding:calc(8px + env(safe-area-inset-top)) 16px 0}
+header.top .ttl{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.logo-box{background:#fff;border-radius:8px;padding:3px 6px;display:inline-flex}
+.logo-box img{height:36px;width:auto;display:block}
+header.top .ttl small{color:var(--muted);font-size:13px;margin-left:auto;text-align:right}
+nav.tabs{max-width:760px;margin:6px auto 0;display:flex;gap:4px}
+nav.tabs button{flex:1;background:transparent;border:0;color:var(--muted);padding:10px 4px 12px;font-weight:600;border-bottom:3px solid transparent;cursor:pointer}
+nav.tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+main{max-width:760px;margin:0 auto;padding:16px}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.sec-title{font-weight:700;font-size:15px;margin:0 0 10px}
+.mt{margin-top:14px}
+.muted{color:var(--muted)}.sm{font-size:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;min-width:0}
+.fld>span{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer;min-height:44px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.sm{padding:6px 10px;min-height:36px;font-size:14px}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.add{width:100%;background:transparent;color:var(--accent);border-style:dashed;margin-bottom:14px}
+.icon{border:1px solid var(--line);background:transparent;border-radius:10px;width:40px;height:40px;cursor:pointer;flex:none;color:var(--muted)}
+.icon.danger{color:var(--danger)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.toolbar .status{margin-left:auto;align-self:center;font-size:13px;color:var(--muted)}
+.banner{background:var(--warn-bg);color:var(--warn);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner .btn{margin-left:auto}
+.room-head{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.room-idx{flex:none;width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--accent);font-weight:700;display:grid;place-items:center;font-size:14px}
+.room-name{font-weight:700}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:12px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:8px 2px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;min-height:40px}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.tag{font-style:normal;font-size:11px;padding:1px 7px;border-radius:99px;background:var(--soft);color:var(--accent);border:0}
+button.tag{cursor:pointer;background:var(--warn-bg);color:var(--warn)}
+.drops{border-top:1px dashed var(--line);padding-top:10px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.dgrid .dl{grid-column:1/-1;font-weight:700;font-size:14px;display:flex;gap:6px;align-items:center}
+.dgrid .fld{margin-bottom:8px}
+.prices{border-top:1px dashed var(--line);padding-top:10px}
+.bd{background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:4px}
+.line{display:flex;justify-content:space-between;gap:10px;padding:5px 0;align-items:baseline}
+.line span{min-width:0}
+.line small{display:block;color:var(--muted);font-size:12px}
+.line b{white-space:nowrap;font-variant-numeric:tabular-nums}
+.line.sub{border-top:1px solid var(--line);margin-top:4px;padding-top:8px;font-weight:700}
+.line.warn{color:var(--warn);font-size:13px}
+.line.total{font-size:20px;font-weight:800;border-top:2px solid var(--ink);margin-top:6px;padding-top:10px}
+.xrow{display:grid;grid-template-columns:1fr 140px 40px;gap:8px;margin-bottom:8px}
+.vars{border-top:1px dashed var(--line);padding-top:10px;margin-bottom:10px}
+.vrow{display:grid;grid-template-columns:72px 84px 1fr 40px;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.vrow .vname{grid-column:1/-1}
+.drow{display:grid;grid-template-columns:90px 1fr;gap:8px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.bar .in{max-width:760px;margin:0 auto;display:flex;gap:8px;align-items:center}
+.bar .tot{margin-right:auto;min-width:0}
+.bar .tot small{display:block;font-size:12px;color:var(--muted)}
+.bar .tot b{font-size:19px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar .btn{padding:10px 12px}
+.hitem{display:grid;grid-template-columns:1fr auto;gap:6px 12px}
+.hmain{display:flex;flex-direction:column;min-width:0}
+.hmain b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.htot{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hact{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.empty{text-align:center;color:var(--muted);padding:30px 0}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.help li{margin-bottom:6px}
+#print{display:none}
+@media (max-width:520px){
+  .grid3{grid-template-columns:1fr 1fr}
+  .seg button{font-size:12px}
+  .xrow{grid-template-columns:1fr 110px 40px}
+  .bar .btn .lbl{display:none}
+}
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  body>*:not(#print){display:none!important}
+  #print{display:block}
+  @page{size:A4;margin:14mm}
+}
+/* Dokumen cetak */
+#print{font:12px/1.4 Arial,Helvetica,sans-serif;color:#000}
+#print .ph{display:flex;align-items:center;gap:16px;border-bottom:3px solid #f5873a;padding-bottom:8px;margin-bottom:2px}
+#print .ph img{width:190px;height:auto}
+#print .ph2{border-bottom:1px solid #0a8f4a;margin-bottom:12px}
+#print h1{font-size:22px;margin:0 0 2px;color:#0a8f4a}
+#print .tg{font-weight:bold;font-size:12.5px;color:#333}
+#print .sl{font-weight:bold;font-style:italic;color:#f5873a;margin:1px 0 3px}
+#print h2{font-size:14px;margin:0 0 8px;text-align:center}
+#print .pc{display:flex;justify-content:space-between;gap:20px;margin-bottom:10px}
+#print h3{font-size:12px;margin:12px 0 0;padding:5px 6px;background:#0a8f4a;color:#fff}
+#print td.c{color:#333}
+#print table{width:100%;border-collapse:collapse}
+#print th,#print td{border:1px solid #999;padding:5px 6px;vertical-align:top}
+#print th{background:#e8f5ed;text-align:left}
+#print td.n{text-align:right;white-space:nowrap}
+#print tr.grp td{background:#f4f4f4;font-weight:bold}
+#print tr.st td{font-weight:bold}
+#print tr.tt td{font-weight:bold;font-size:14px;background:#0a8f4a;color:#fff}
+#print table{margin-bottom:4px;page-break-inside:auto}
+#print tr{page-break-inside:avoid}
+#print .note{margin-top:12px}
+#print .sign{display:flex;justify-content:space-between;margin-top:30px;text-align:center}
+#print .sign div{width:40%}
+#print .sign .sp{height:60px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="ttl"><span class="logo-box"><img src="logo.png" alt="PM Plafon PVC"></span><small>Estimasi biaya<br>pemasangan plafon</small></div>
+  <nav class="tabs">
+    <button data-tab="est" class="on">Estimasi</button>
+    <button data-tab="hist">Riwayat</button>
+    <button data-tab="set">Pengaturan</button>
+  </nav>
+</header>
+
+<main>
+  <section class="view on" id="v-est">
+    <div id="price-banner"></div>
+    <div class="toolbar">
+      <button class="btn ghost sm" data-act="newEst">+ Estimasi baru</button>
+      <button class="btn ghost sm" data-act="copyText">Salin teks</button>
+      <button class="btn ghost sm" data-act="pdfSave">Unduh PDF</button>
+      <button class="btn ghost sm" data-act="print">Cetak</button>
+      <span class="status" id="status"></span>
+    </div>
+    <div id="editor"></div>
+  </section>
+
+  <section class="view" id="v-hist">
+    <div class="card" style="padding:10px">
+      <input id="hq" type="search" placeholder="Cari nama pelanggan, alamat, atau no. estimasi">
+    </div>
+    <div id="hlist"></div>
+  </section>
+
+  <section class="view" id="v-set">
+    <div class="card">
+      <div class="sec-title">Harga satuan (default)</div>
+      <p class="muted sm" style="margin-top:-4px">Dipakai otomatis setiap menambah ruangan baru. Harga di tiap ruangan tetap bisa diubah.</p>
+      <div class="grid2">
+        <label class="fld"><span>Plafon datar /m²</span><input inputmode="numeric" data-s="harga.datar" data-money></label>
+        <label class="fld"><span>Plafon single drop /m²</span><input inputmode="numeric" data-s="harga.single" data-money></label>
+        <label class="fld"><span>Plafon double drop /m²</span><input inputmode="numeric" data-s="harga.double" data-money></label>
+        <label class="fld"><span>Plafon triple drop /m²</span><input inputmode="numeric" data-s="harga.triple" data-money></label>
+        <label class="fld"><span>Plafon fourple drop /m²</span><input inputmode="numeric" data-s="harga.fourple" data-money></label>
+        <label class="fld"><span>Lis dinding /m</span><input inputmode="numeric" data-s="harga.lis" data-money></label>
+        <label class="fld"><span>Drop per tingkat /m</span><input inputmode="numeric" data-s="harga.drop" data-money></label>
+      </div>
+      <button class="btn ghost sm" data-act="applyPrices">Terapkan harga ini ke estimasi yang sedang dibuka</button>
+    </div>
+    <div class="card">
+      <div class="sec-title">Data usaha (kop PDF &amp; WhatsApp)</div>
+      <label class="fld"><span>Nama usaha</span><input data-s="usaha.nama"></label>
+      <label class="fld"><span>Keterangan usaha</span><input data-s="usaha.tagline"></label>
+      <label class="fld"><span>Slogan</span><input data-s="usaha.slogan"></label>
+      <div class="grid2">
+        <label class="fld"><span>No. HP / WA</span><input data-s="usaha.telp" inputmode="tel"></label>
+        </div>
+      <label class="fld"><span>Alamat</span><textarea data-s="usaha.alamat" style="min-height:50px"></textarea></label>
+      <label class="fld"><span>Catatan default di bawah tabel (otomatis terisi di setiap estimasi baru, satu baris satu poin)</span><textarea data-s="usaha.kaki" style="min-height:96px"></textarea></label>
+      <p class="muted sm" style="margin:0">Pengaturan tersimpan otomatis di perangkat ini.</p>
+    </div>
+    <div class="card">
+      <div class="sec-title">Cadangan &amp; pindah perangkat</div>
+      <p class="muted sm" style="margin-top:-4px">Data tersimpan di masing-masing perangkat. Untuk memindahkan pengaturan dan riwayat ke HP/komputer lain, unduh file cadangan lalu buka di perangkat tujuan.</p>
+      <div class="toolbar" style="margin:0">
+        <button class="btn sm" data-act="export">Unduh cadangan</button>
+        <button class="btn ghost sm" data-act="import">Pulihkan dari file</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <div class="card help">
+      <div class="sec-title">Rumus yang dipakai</div>
+      <ul class="sm" style="padding-left:18px;margin:0">
+        <li>Luas = panjang × lebar; keliling lis = 2 × (panjang + lebar). Bisa diubah manual bila ruangan tidak kotak.</li>
+        <li>Plafon PVC terpasang = luas × harga plafon /m² (sesuai model).</li>
+        <li>Keliling drop tiap tingkat = 2 × (panjang + lebar drop). Bisa diubah manual bila bentuk drop tidak kotak.</li>
+        <li>Drop tingkat 1 / 2 / 3 / 4 = keliling drop tingkat itu × harga drop /m.</li>
+        <li>Variasi plafon dan kelistrikan (bila ada) = volume × harga satuan, masuk ke subtotal ruangannya.</li>
+        <li>Lis dinding = keliling × harga lis /m.</li>
+        <li>Total = jumlah semua ruangan + biaya tambahan − diskon.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<div class="bar">
+  <div class="in">
+    <div class="tot"><small>Total estimasi</small><b id="barTotal">Rp 0</b></div>
+    <button class="btn ghost" data-act="save" title="Simpan ke riwayat">💾<span class="lbl">Simpan</span></button>
+    <button class="btn ghost" data-act="wa" title="Kirim rincian sebagai teks WhatsApp">💬<span class="lbl">Teks WA</span></button>
+    <button class="btn" data-act="pdf" title="Kirim PDF ke WhatsApp">📄<span class="lbl">PDF ke WA</span></button>
+  </div>
+</div>
+
+<datalist id="satuan-list"><option value="m"><option value="m²"><option value="titik"><option value="unit"><option value="buah"><option value="set"><option value="ls"><option value="roll"><option value="pcs"></datalist>
+<datalist id="listrik-list"><option value="Ornamen"><option value="Fitting"><option value="Lampu downlight"><option value="LED strip"><option value="Adaptor LED strip"><option value="Kabel"><option value="Saklar"><option value="Stop kontak"><option value="Lampu"><option value="Pipa conduit"><option value="Instalasi titik lampu"></datalist>
+<div class="toast" id="toast"></div>
+<div id="print"></div>
+
+<script src="logo.js"></script>
+<script src="lib/jspdf.umd.min.js"></script>
+<script src="lib/jspdf.plugin.autotable.min.js"></script>
+<script>
+'use strict';
+const MODELS = {
+  datar:   {nama:'Plafon Datar',  short:'Datar',   drop:0},
+  single:  {nama:'Single Drop',   short:'Single',  drop:1},
+  double:  {nama:'Double Drop',   short:'Double',  drop:2},
+  triple:  {nama:'Triple Drop',   short:'Triple',  drop:3},
+  fourple: {nama:'Fourple Drop',  short:'Fourple', drop:4}
+};
+const LISTS = {
+  variasi: {judul:'Variasi plafon', label:'Variasi', tombol:'+ Tambah variasi plafon', ph:'Nama variasi, mis. motif tengah'},
+  listrik: {judul:'Kelistrikan', label:'Listrik', tombol:'+ Tambah kelistrikan', ph:'Ornamen, fitting, downlight, kabel…', names:'listrik-list'}
+};
+const KEY = {set:'pvc_settings', hist:'pvc_history', draft:'pvc_draft'};
+const DEF = {
+  usaha:{nama:'PM PLAFON PVC', tagline:'Pusat Penjualan dan Pemasangan Plafon PVC, Interior dan Baja Ringan', slogan:'Termurah - Terlengkap - Terpercaya', alamat:'Jl. Kalangan-Pancar Km. 2 Dilem, Kebonrejo, Salaman, Magelang 56162', telp:'085700003223', kaki:'Estimasi ini dapat berubah sesuai ukuran dan kondisi di lapangan.\nGaransi 3 Tahun dari tanggal pemasangan.\nMohon pastikan untuk diperiksa kembali sebelum menyetujui.'},
+  harga:{datar:0, single:0, double:0, triple:0, fourple:0, lis:0, drop:80000}
+};
+
+/* ---------- util ---------- */
+function $(s, r){ return (r || document).querySelector(s); }
+function $$(s, r){ return Array.from((r || document).querySelectorAll(s)); }
+function sget(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } }
+function sset(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ toast('Gagal menyimpan di perangkat ini'); return false; } }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function r2(n){ return Math.round(n * 100) / 100; }
+// Ukuran: terima koma atau titik sebagai desimal
+function pNum(v){
+  v = String(v == null ? '' : v).trim().replace(/\s/g, '');
+  if(!v) return 0;
+  if(v.includes(',')) v = v.replace(/\./g, '').replace(',', '.');
+  const n = parseFloat(v);
+  return isFinite(n) && n > 0 ? n : 0;
+}
+// Uang: ambil angkanya saja
+function pMoney(v){ const n = parseInt(String(v == null ? '' : v).replace(/\D/g, ''), 10); return isFinite(n) ? n : 0; }
+function fNum(n){ return r2(n || 0).toLocaleString('id-ID', {maximumFractionDigits:2}); }
+function vNum(n){ return n ? r2(n).toLocaleString('id-ID', {maximumFractionDigits:2, useGrouping:false}) : ''; }
+function fMoney(n){ return Math.round(n || 0).toLocaleString('id-ID'); }
+function vMoney(n){ return n ? fMoney(n) : ''; }
+function rp(n){ return (n < 0 ? '-' : '') + 'Rp ' + fMoney(Math.abs(n)); }
+function today(){ const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); }
+function fDate(s){ if(!s) return ''; const d = new Date(s + 'T00:00:00'); return isNaN(d) ? s : d.toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'}); }
+function genNo(){
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  return 'EST-' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes());
+}
+let toastT;
+function toast(msg, ms){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), ms || 2200); }
+
+/* ---------- data ---------- */
+function loadSettings(){
+  const s = sget(KEY.set, {}) || {};
+  const usaha = Object.assign({}, DEF.usaha);
+  Object.keys(s.usaha || {}).forEach(k => { if(s.usaha[k]) usaha[k] = s.usaha[k]; });
+  if(usaha.kaki === 'Estimasi ini dapat berubah sesuai ukuran dan kondisi di lapangan.') usaha.kaki = DEF.usaha.kaki;
+  return {usaha:usaha, harga:Object.assign({}, DEF.harga, s.harga || {})};
+}
+// Lengkapi data lama agar cocok dengan versi terbaru
+function normRoom(r){
+  if(!Array.isArray(r.drop)) r.drop = [];
+  for(let k = 0; k < 4; k++) r.drop[k] = +r.drop[k] || 0;
+  if(!Array.isArray(r.dropP)){ r.dropP = [0, 0, 0, 0]; r.dropL = [0, 0, 0, 0]; r.dropMan = r.drop.map(v => v > 0); }
+  r.variasi = r.variasi || []; r.listrik = r.listrik || [];
+  return r;
+}
+function normEst(e){
+  e.pelanggan = e.pelanggan || {nama:'', alamat:'', telp:''};
+  e.tambahan = e.tambahan || []; e.diskon = e.diskon || {tipe:'nominal', nilai:0};
+  e.ruang.forEach(normRoom);
+  // Estimasi lama: isi catatan default sekali saja (sesudahnya boleh diubah/dihapus)
+  if(!e.catatanInit){ e.catatan = [e.catatan, S.usaha.kaki].filter(Boolean).join('\n'); e.catatanInit = true; }
+  return e;
+}
+function newRoom(nama, model){
+  model = model || 'datar';
+  return {id:uid(), nama:nama, model:model, p:0, l:0, luas:0, keliling:0, manLuas:false, manKel:false,
+    hPlafon:S.harga[model], hLis:S.harga.lis, hDrop:S.harga.drop, drop:[0, 0, 0, 0], dropP:[0, 0, 0, 0], dropL:[0, 0, 0, 0], dropMan:[false, false, false, false],
+    variasi:[], listrik:[]};
+}
+function newEst(){
+  return {id:uid(), no:genNo(), tanggal:today(), pelanggan:{nama:'', alamat:'', telp:''},
+    ruang:[newRoom('Ruang 1')], tambahan:[], diskon:{tipe:'nominal', nilai:0}, catatan:S.usaha.kaki, catatanInit:true,
+    updated:Date.now(), dirty:false};
+}
+function calcRoom(r){
+  const n = MODELS[r.model].drop, kotak = r.p && r.l;
+  // cara: rumus volume yang ditampilkan ke konsumen; ukur: volume dari ukuran ruangan
+  const items = [{label:'Plafon PVC terpasang (luas)', ukur:true, vol:r.luas, sat:'m²', harga:r.hPlafon,
+    cara:!r.manLuas && kotak ? fNum(r.p) + ' m × ' + fNum(r.l) + ' m' : ''}];
+  for(let k = 0; k < n; k++){
+    const dp = r.dropP[k], dl = r.dropL[k];
+    items.push({label:'Drop tingkat ' + (k + 1) + ' (keliling)', ukur:true, vol:r.drop[k] || 0, sat:'m', harga:r.hDrop,
+      cara:!r.dropMan[k] && dp && dl ? '2 × (' + fNum(dp) + ' m + ' + fNum(dl) + ' m)' : ''});
+  }
+  items.push({label:'Lis dinding (keliling ruangan)', ukur:true, vol:r.keliling, sat:'m', harga:r.hLis,
+    cara:!r.manKel && kotak ? '2 × (' + fNum(r.p) + ' m + ' + fNum(r.l) + ' m)' : ''});
+  Object.keys(LISTS).forEach(k => r[k].forEach(v => items.push({label:LISTS[k].label + ': ' + (v.nama || LISTS[k].judul.toLowerCase()), vol:+v.vol || 0, sat:v.sat || '', harga:+v.harga || 0, cara:''})));
+  let total = 0;
+  items.forEach(it => { it.jml = Math.round(it.vol * it.harga); total += it.jml; });
+  return {items:items, total:total, missingPrice:items.some(it => it.vol > 0 && !it.harga)};
+}
+function calcEst(e){
+  const rooms = e.ruang.map(calcRoom);
+  const ruang = rooms.reduce((a, c) => a + c.total, 0);
+  const tambah = e.tambahan.reduce((a, x) => a + (+x.jumlah || 0), 0);
+  const sub = ruang + tambah;
+  const d = e.diskon || {};
+  let disk = d.tipe === 'persen' ? Math.round(sub * (+d.nilai || 0) / 100) : (+d.nilai || 0);
+  disk = Math.min(disk, sub);
+  return {rooms:rooms, ruang:ruang, tambah:tambah, sub:sub, disk:disk, total:sub - disk};
+}
+
+let S = loadSettings();
+let H = sget(KEY.hist, []); if(!Array.isArray(H)) H = [];
+H = H.filter(h => h && Array.isArray(h.ruang)).map(normEst);
+let E = sget(KEY.draft, null); E = E && Array.isArray(E.ruang) ? normEst(E) : newEst();
+
+let draftT;
+function changed(){
+  E.dirty = true; E.updated = Date.now();
+  setStatus();
+  clearTimeout(draftT); draftT = setTimeout(() => sset(KEY.draft, E), 300);
+}
+function setStatus(){
+  const inHist = H.some(h => h.id === E.id);
+  $('#status').textContent = E.dirty ? (inHist ? 'Ada perubahan belum disimpan' : 'Belum disimpan') : 'Tersimpan di riwayat';
+}
+
+/* ---------- editor ---------- */
+function tagHTML(man, w){
+  return man ? '<button class="tag" data-act="auto" data-w="' + w + '" title="Kembalikan ke hitungan otomatis">manual · hitung ulang</button>'
+             : '<em class="tag">otomatis</em>';
+}
+function roomHTML(r, i){
+  const n = MODELS[r.model].drop;
+  let drops = '';
+  for(let k = 0; k < n; k++){
+    drops += '<div class="dgrid"><div class="dl">Drop tingkat ' + (k + 1) + ' <span data-tag="d' + k + '">' + tagHTML(r.dropMan[k], 'd' + k) + '</span></div>' +
+      '<label class="fld"><span>Panjang (m)</span><input inputmode="decimal" data-f="dp' + k + '" value="' + vNum(r.dropP[k]) + '" placeholder="0"></label>' +
+      '<label class="fld"><span>Lebar (m)</span><input inputmode="decimal" data-f="dl' + k + '" value="' + vNum(r.dropL[k]) + '" placeholder="0"></label>' +
+      '<label class="fld"><span>Keliling (m)</span><input inputmode="decimal" data-f="dk' + k + '" value="' + vNum(r.drop[k]) + '" placeholder="0"></label></div>';
+  }
+  return '<section class="card room" data-i="' + i + '">' +
+    '<div class="room-head"><span class="room-idx">' + (i + 1) + '</span>' +
+      '<input class="room-name" data-f="nama" value="' + esc(r.nama) + '" placeholder="Nama ruangan" aria-label="Nama ruangan">' +
+      '<button class="icon" data-act="dupRoom" title="Duplikat ruangan" aria-label="Duplikat ruangan">⧉</button>' +
+      '<button class="icon danger" data-act="delRoom" title="Hapus ruangan" aria-label="Hapus ruangan">✕</button></div>' +
+    '<div class="seg">' + Object.keys(MODELS).map(k => '<button data-act="model" data-m="' + k + '" class="' + (r.model === k ? 'on' : '') + '">' + MODELS[k].short + '</button>').join('') + '</div>' +
+    '<div class="grid2">' +
+      '<label class="fld"><span>Panjang (m)</span><input inputmode="decimal" data-f="p" value="' + vNum(r.p) + '" placeholder="0"></label>' +
+      '<label class="fld"><span>Lebar (m)</span><input inputmode="decimal" data-f="l" value="' + vNum(r.l) + '" placeholder="0"></label>' +
+      '<div class="fld"><span>Luas (m²) <span data-tag="luas">' + tagHTML(r.manLuas, 'luas') + '</span></span><input inputmode="decimal" data-f="luas" value="' + vNum(r.luas) + '" placeholder="0" aria-label="Luas"></div>' +
+      '<div class="fld"><span>Keliling lis (m) <span data-tag="kel">' + tagHTML(r.manKel, 'kel') + '</span></span><input inputmode="decimal" data-f="keliling" value="' + vNum(r.keliling) + '" placeholder="0" aria-label="Keliling lis"></div>' +
+    '</div>' +
+    (n ? '<div class="drops">' + drops + '</div>' : '') +
+    '<div class="grid3 prices">' +
+      '<label class="fld"><span>Harga plafon /m²</span><input inputmode="numeric" data-money data-f="hPlafon" value="' + vMoney(r.hPlafon) + '" placeholder="0"></label>' +
+      (n ? '<label class="fld"><span>Harga drop /m</span><input inputmode="numeric" data-money data-f="hDrop" value="' + vMoney(r.hDrop) + '" placeholder="0"></label>' : '') +
+      '<label class="fld"><span>Harga lis /m</span><input inputmode="numeric" data-money data-f="hLis" value="' + vMoney(r.hLis) + '" placeholder="0"></label>' +
+    '</div>' +
+    Object.keys(LISTS).map(k => listHTML(r, k)).join('') +
+    '<div class="bd" data-bd></div></section>';
+}
+// Daftar rincian tambahan per ruangan: volume × harga satuan
+function listHTML(r, key){
+  const L = LISTS[key], rows = r[key] || [];
+  return '<div class="vars" data-list="' + key + '">' +
+    (rows.length ? '<div class="sec-title sm" style="margin-bottom:6px">' + L.judul + ' <span class="muted" style="font-weight:400">— volume, satuan, harga satuan</span></div>' : '') +
+    rows.map((v, j) => '<div class="vrow" data-v="' + j + '">' +
+      '<input class="vname" data-vf="nama"' + (L.names ? ' list="' + L.names + '"' : '') + ' value="' + esc(v.nama) + '" placeholder="' + L.ph + '" aria-label="Nama ' + L.judul.toLowerCase() + '">' +
+      '<input inputmode="decimal" data-vf="vol" value="' + vNum(v.vol) + '" placeholder="Vol" aria-label="Volume">' +
+      '<input data-vf="sat" list="satuan-list" value="' + esc(v.sat) + '" placeholder="Satuan" aria-label="Satuan">' +
+      '<input inputmode="numeric" data-money data-vf="harga" value="' + vMoney(v.harga) + '" placeholder="Harga" aria-label="Harga satuan">' +
+      '<button class="icon danger" data-act="delItem" aria-label="Hapus">✕</button></div>').join('') +
+    '<button class="btn ghost sm" data-act="addItem">' + L.tombol + '</button></div>';
+}
+function volText(it){ return (it.cara ? it.cara + ' = ' : '') + fNum(it.vol) + (it.sat ? ' ' + it.sat : ''); }
+// Teks kolom "perhitungan volume" untuk konsumen
+function caraText(it){ return it.cara ? it.cara + ' = ' + fNum(it.vol) + ' ' + it.sat : it.ukur ? 'Ukur langsung di lapangan' : '-'; }
+function bdHTML(r){
+  const c = calcRoom(r);
+  let h = c.items.map(it => '<div class="line"><span>' + esc(it.label) + '<small>' + esc(volText(it)) + ' × ' + rp(it.harga) + '</small></span><b>' + rp(it.jml) + '</b></div>').join('');
+  if(c.missingPrice) h += '<div class="line warn"><span>⚠ Ada harga satuan yang masih 0.</span></div>';
+  return h + '<div class="line sub"><span>Subtotal ' + esc(r.nama || 'ruangan') + '</span><b>' + rp(c.total) + '</b></div>';
+}
+function extrasHTML(){
+  if(!E.tambahan.length) return '<p class="muted sm" style="margin-top:0">Contoh: transport, bongkar plafon lama, rangka tambahan.</p>';
+  return E.tambahan.map((x, j) => '<div class="xrow" data-x="' + j + '">' +
+    '<input data-xf="nama" placeholder="Uraian" value="' + esc(x.nama) + '" aria-label="Uraian biaya">' +
+    '<input data-xf="jumlah" data-money inputmode="numeric" placeholder="Rp" value="' + vMoney(x.jumlah) + '" aria-label="Jumlah">' +
+    '<button class="icon danger" data-act="delExtra" aria-label="Hapus biaya">✕</button></div>').join('');
+}
+function renderEditor(){
+  const persen = E.diskon.tipe === 'persen';
+  $('#editor').innerHTML =
+    '<section class="card"><div class="sec-title">Data pelanggan</div>' +
+      '<div class="grid2"><label class="fld"><span>No. estimasi</span><input data-g="no" value="' + esc(E.no) + '"></label>' +
+      '<label class="fld"><span>Tanggal</span><input type="date" data-g="tanggal" value="' + esc(E.tanggal) + '"></label></div>' +
+      '<label class="fld"><span>Nama pelanggan</span><input data-g="pelanggan.nama" value="' + esc(E.pelanggan.nama) + '" autocomplete="off"></label>' +
+      '<div class="grid2"><label class="fld"><span>No. HP / WA</span><input data-g="pelanggan.telp" inputmode="tel" value="' + esc(E.pelanggan.telp) + '" placeholder="08…"></label>' +
+      '<label class="fld"><span>Alamat</span><input data-g="pelanggan.alamat" value="' + esc(E.pelanggan.alamat) + '"></label></div>' +
+    '</section>' +
+    '<div id="rooms"></div>' +
+    '<button class="btn add" data-act="addRoom">+ Tambah ruangan</button>' +
+    '<section class="card"><div class="sec-title">Biaya tambahan</div><div id="extras">' + extrasHTML() + '</div>' +
+      '<button class="btn ghost sm" data-act="addExtra">+ Tambah biaya</button>' +
+      '<div class="sec-title mt">Diskon</div>' +
+      '<div class="drow"><select data-g="diskon.tipe" aria-label="Jenis diskon"><option value="nominal"' + (persen ? '' : ' selected') + '>Rp</option><option value="persen"' + (persen ? ' selected' : '') + '>%</option></select>' +
+      '<input data-g="diskon.nilai" ' + (persen ? 'inputmode="decimal"' : 'inputmode="numeric" data-money') + ' value="' + (persen ? vNum(E.diskon.nilai) : vMoney(E.diskon.nilai)) + '" placeholder="0" aria-label="Nilai diskon"></div>' +
+      '<label class="fld mt"><span>Catatan di bawah tabel (satu baris satu poin — boleh diubah atau dihapus)</span><textarea data-g="catatan" style="min-height:96px">' + esc(E.catatan) + '</textarea></label>' +
+    '</section>' +
+    '<section class="card" id="summary"></section>';
+  renderRooms();
+  setStatus();
+}
+function renderRooms(){
+  const box = $('#rooms');
+  box.innerHTML = E.ruang.length ? E.ruang.map(roomHTML).join('') : '<p class="empty">Belum ada ruangan.</p>';
+  E.ruang.forEach((r, i) => updateRoom(i, true));
+  updateSummary();
+}
+function roomCard(i){ return $('#rooms .room[data-i="' + i + '"]'); }
+function updateRoom(i, skipSum){
+  const card = roomCard(i);
+  if(card) $('[data-bd]', card).innerHTML = bdHTML(E.ruang[i]);
+  if(!skipSum) updateSummary();
+}
+function updateSummary(){
+  const c = calcEst(E);
+  let h = '<div class="sec-title">Ringkasan</div>';
+  h += E.ruang.map((r, i) => '<div class="line"><span>' + (i + 1) + '. ' + esc(r.nama || 'Ruangan') + '<small>' + MODELS[r.model].nama + '</small></span><b>' + rp(c.rooms[i].total) + '</b></div>').join('');
+  if(c.tambah) h += '<div class="line"><span>Biaya tambahan</span><b>' + rp(c.tambah) + '</b></div>';
+  if(c.disk){
+    h += '<div class="line sub"><span>Subtotal</span><b>' + rp(c.sub) + '</b></div>';
+    h += '<div class="line"><span>Diskon' + (E.diskon.tipe === 'persen' ? ' ' + fNum(E.diskon.nilai) + '%' : '') + '</span><b>' + rp(-c.disk) + '</b></div>';
+  }
+  h += '<div class="line total"><span>TOTAL</span><b>' + rp(c.total) + '</b></div>';
+  $('#summary').innerHTML = h;
+  $('#barTotal').textContent = rp(c.total);
+}
+function autoCalc(r, card){
+  if(!r.manLuas){ r.luas = r2(r.p * r.l); $('[data-f="luas"]', card).value = vNum(r.luas); }
+  if(!r.manKel){ r.keliling = r2(2 * (r.p + r.l)); $('[data-f="keliling"]', card).value = vNum(r.keliling); }
+}
+function autoDrop(r, k, card){
+  if(r.dropMan[k]) return;
+  r.drop[k] = r2(2 * (r.dropP[k] + r.dropL[k]));
+  $('[data-f="dk' + k + '"]', card).value = vNum(r.drop[k]);
+}
+function setTag(card, w, man){ $('[data-tag="' + w + '"]', card).innerHTML = tagHTML(man, w); }
+
+function readDisc(){
+  const inp = $('[data-g="diskon.nilai"]');
+  return E.diskon.tipe === 'persen' ? Math.min(100, pNum(inp.value)) : pMoney(inp.value);
+}
+function onGlobalInput(path, t){
+  const v = t.value;
+  if(path.indexOf('pelanggan.') === 0) E.pelanggan[path.slice(10)] = v;
+  else if(path === 'diskon.tipe'){
+    E.diskon.tipe = v;
+    const inp = $('[data-g="diskon.nilai"]');
+    inp.toggleAttribute('data-money', v === 'nominal');
+    inp.inputMode = v === 'persen' ? 'decimal' : 'numeric';
+    E.diskon.nilai = readDisc();
+  }
+  else if(path === 'diskon.nilai') E.diskon.nilai = readDisc();
+  else E[path] = v;
+  updateSummary(); changed();
+}
+function onRoomInput(i, f, t, card){
+  const r = E.ruang[i];
+  if(f === 'nama'){ r.nama = t.value; }
+  else if(f === 'p' || f === 'l'){ r[f] = pNum(t.value); autoCalc(r, card); }
+  else if(f === 'luas'){ r.luas = pNum(t.value); if(!r.manLuas){ r.manLuas = true; setTag(card, 'luas', true); } }
+  else if(f === 'keliling'){ r.keliling = pNum(t.value); if(!r.manKel){ r.manKel = true; setTag(card, 'kel', true); } }
+  else if(/^d[plk]\d$/.test(f)){
+    const k = +f[2];
+    if(f[1] === 'k'){ r.drop[k] = pNum(t.value); if(!r.dropMan[k]){ r.dropMan[k] = true; setTag(card, 'd' + k, true); } }
+    else { (f[1] === 'p' ? r.dropP : r.dropL)[k] = pNum(t.value); autoDrop(r, k, card); }
+  }
+  else { r[f] = pMoney(t.value); }
+  updateRoom(i); changed();
+}
+
+const ed = $('#editor');
+ed.addEventListener('input', e => {
+  const t = e.target;
+  if(t.dataset.g){ onGlobalInput(t.dataset.g, t); return; }
+  const card = t.closest('.room');
+  if(card && t.dataset.f){ onRoomInput(+card.dataset.i, t.dataset.f, t, card); return; }
+  if(card && t.dataset.vf){
+    const i = +card.dataset.i, v = E.ruang[i][t.closest('[data-list]').dataset.list][+t.closest('[data-v]').dataset.v], f = t.dataset.vf;
+    v[f] = f === 'vol' ? pNum(t.value) : f === 'harga' ? pMoney(t.value) : t.value;
+    updateRoom(i); changed(); return;
+  }
+  const xr = t.closest('[data-x]');
+  if(xr && t.dataset.xf){
+    const x = E.tambahan[+xr.dataset.x];
+    x[t.dataset.xf] = t.dataset.xf === 'jumlah' ? pMoney(t.value) : t.value;
+    updateSummary(); changed();
+  }
+});
+ed.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const act = b.dataset.act, card = b.closest('.room'), i = card ? +card.dataset.i : -1;
+  if(act === 'addRoom'){
+    const last = E.ruang[E.ruang.length - 1];
+    E.ruang.push(newRoom('Ruang ' + (E.ruang.length + 1), last ? last.model : 'datar'));
+    renderRooms(); changed();
+    const nc = roomCard(E.ruang.length - 1);
+    nc.scrollIntoView({behavior:'smooth', block:'start'});
+    setTimeout(() => $('[data-f="nama"]', nc).select(), 350);
+  } else if(act === 'dupRoom'){
+    const r = clone(E.ruang[i]); r.id = uid(); r.nama = (r.nama || 'Ruang') + ' (salin)';
+    E.ruang.splice(i + 1, 0, r); renderRooms(); changed(); toast('Ruangan diduplikat');
+  } else if(act === 'delRoom'){
+    if(!confirm('Hapus ruangan "' + (E.ruang[i].nama || 'tanpa nama') + '"?')) return;
+    E.ruang.splice(i, 1); renderRooms(); changed();
+  } else if(act === 'model'){
+    const r = E.ruang[i], m = b.dataset.m;
+    if(r.model === m) return;
+    r.model = m;
+    if(S.harga[m]) r.hPlafon = S.harga[m];
+    card.outerHTML = roomHTML(r, i); updateRoom(i); changed();
+  } else if(act === 'auto'){
+    const r = E.ruang[i];
+    const w = b.dataset.w;
+    if(w === 'luas') r.manLuas = false;
+    else if(w === 'kel') r.manKel = false;
+    else { r.dropMan[+w.slice(1)] = false; autoDrop(r, +w.slice(1), card); }
+    autoCalc(r, card); setTag(card, w, false); updateRoom(i); changed();
+  } else if(act === 'addItem'){
+    const r = E.ruang[i], key = b.closest('[data-list]').dataset.list;
+    (r[key] = r[key] || []).push({nama:'', vol:0, sat:'', harga:0});
+    card.outerHTML = roomHTML(r, i); updateRoom(i); changed();
+    $('[data-list="' + key + '"] .vrow:last-of-type [data-vf="nama"]', roomCard(i)).focus();
+  } else if(act === 'delItem'){
+    E.ruang[i][b.closest('[data-list]').dataset.list].splice(+b.closest('[data-v]').dataset.v, 1);
+    card.outerHTML = roomHTML(E.ruang[i], i); updateRoom(i); changed();
+  } else if(act === 'addExtra'){
+    E.tambahan.push({nama:'', jumlah:0}); $('#extras').innerHTML = extrasHTML();
+    $('#extras .xrow:last-child [data-xf="nama"]').focus(); changed();
+  } else if(act === 'delExtra'){
+    E.tambahan.splice(+b.closest('[data-x]').dataset.x, 1); $('#extras').innerHTML = extrasHTML();
+    updateSummary(); changed();
+  }
+});
+
+// Rapikan angka uang saat selesai mengetik, pilih isi saat fokus agar cepat diganti
+document.addEventListener('focusout', e => {
+  const t = e.target;
+  if(t.matches && t.matches('input[data-money]')) t.value = vMoney(pMoney(t.value));
+});
+document.addEventListener('focusin', e => {
+  const t = e.target;
+  if(t.matches && t.matches('input[inputmode="decimal"],input[inputmode="numeric"]')) setTimeout(() => { try{ t.select(); }catch(err){} }, 0);
+});
+
+/* ---------- teks WA & cetak ---------- */
+function roomDim(r){ return r.p && r.l ? fNum(r.p) + ' m × ' + fNum(r.l) + ' m' : ''; }
+function huruf(i){ return String.fromCharCode(65 + (i % 26)); }
+function roomTitle(r, i){ const dim = roomDim(r); return huruf(i) + '. ' + (r.nama || 'Ruangan') + ' — ' + MODELS[r.model].nama + (dim ? ' (' + dim + ')' : ''); }
+function noteLines(){ return String(E.catatan || '').split('\n').map(t => t.trim()).filter(Boolean); }
+function diskLabel(){ return 'Diskon' + (E.diskon.tipe === 'persen' ? ' ' + fNum(E.diskon.nilai) + '%' : ''); }
+function pdfName(){ return ('Estimasi Plafon - ' + (E.pelanggan.nama || E.no)).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim() + '.pdf'; }
+
+function buildText(){
+  const c = calcEst(E), u = S.usaha, L = [];
+  L.push('*' + (u.nama || 'Plafon PVC') + '*');
+  if(u.tagline) L.push(u.tagline);
+  if(u.slogan) L.push('_' + u.slogan + '_');
+  if(u.alamat) L.push(u.alamat);
+  if(u.telp) L.push('HP/WA: ' + u.telp);
+  L.push('', '*RINCIAN ESTIMASI BIAYA PEMASANGAN PLAFON PVC*', 'No: ' + E.no, 'Tanggal: ' + fDate(E.tanggal));
+  if(E.pelanggan.nama) L.push('Kepada: ' + E.pelanggan.nama);
+  if(E.pelanggan.alamat) L.push('Alamat: ' + E.pelanggan.alamat);
+  E.ruang.forEach((r, i) => {
+    L.push('', '*' + roomTitle(r, i) + '*');
+    c.rooms[i].items.forEach((it, k) => {
+      L.push((k + 1) + ') ' + it.label);
+      if(it.cara) L.push('    Volume: ' + it.cara + ' = ' + fNum(it.vol) + ' ' + it.sat);
+      L.push('    ' + fNum(it.vol) + (it.sat ? ' ' + it.sat : '') + ' × ' + rp(it.harga) + ' = *' + rp(it.jml) + '*');
+    });
+    L.push('Subtotal ' + (r.nama || 'ruangan') + ': *' + rp(c.rooms[i].total) + '*');
+  });
+  if(E.tambahan.length){
+    L.push('', '*Biaya tambahan*');
+    E.tambahan.forEach(x => L.push('• ' + (x.nama || 'Biaya lain') + ': ' + rp(+x.jumlah || 0)));
+  }
+  L.push('', '*REKAP BIAYA*');
+  E.ruang.forEach((r, i) => L.push(huruf(i) + '. ' + (r.nama || 'Ruangan') + ' (' + MODELS[r.model].nama + '): ' + rp(c.rooms[i].total)));
+  if(c.tambah) L.push('Biaya tambahan: ' + rp(c.tambah));
+  if(c.disk) L.push('Subtotal: ' + rp(c.sub), diskLabel() + ': ' + rp(-c.disk));
+  L.push('*TOTAL: ' + rp(c.total) + '*');
+  const nt = noteLines();
+  if(nt.length) L.push('', '*Catatan:*', ...nt.map(t => '- ' + t));
+  return L.join('\n');
+}
+
+function buildPrint(){
+  const c = calcEst(E), u = S.usaha, p = E.pelanggan;
+  const th = '<tr><th style="width:28px">No</th><th>Uraian pekerjaan</th><th>Perhitungan volume</th><th style="width:70px">Volume</th><th style="width:90px">Harga satuan</th><th style="width:100px">Jumlah</th></tr>';
+  let h = '';
+  E.ruang.forEach((r, i) => {
+    h += '<h3>' + esc(roomTitle(r, i)) + '</h3><table><thead>' + th + '</thead><tbody>';
+    c.rooms[i].items.forEach((it, k) => {
+      h += '<tr><td class="n">' + (k + 1) + '</td><td>' + esc(it.label) + '</td><td class="c">' + esc(caraText(it)) + '</td><td class="n">' + fNum(it.vol) + ' ' + esc(it.sat) + '</td><td class="n">' + rp(it.harga) + '</td><td class="n">' + rp(it.jml) + '</td></tr>';
+    });
+    h += '<tr class="st"><td colspan="5" class="n">Subtotal ' + esc(r.nama || '') + '</td><td class="n">' + rp(c.rooms[i].total) + '</td></tr></tbody></table>';
+  });
+  if(E.tambahan.length){
+    h += '<h3>Biaya tambahan</h3><table><tbody>';
+    E.tambahan.forEach((x, k) => { h += '<tr><td class="n" style="width:28px">' + (k + 1) + '</td><td>' + esc(x.nama || 'Biaya lain') + '</td><td class="n" style="width:100px">' + rp(+x.jumlah || 0) + '</td></tr>'; });
+    h += '</tbody></table>';
+  }
+  h += '<h3>Rekap biaya</h3><table><thead><tr><th style="width:28px">No</th><th>Ruangan</th><th>Model plafon</th><th>Ukuran</th><th style="width:100px">Jumlah</th></tr></thead><tbody>';
+  E.ruang.forEach((r, i) => { h += '<tr><td class="n">' + huruf(i) + '</td><td>' + esc(r.nama || 'Ruangan') + '</td><td>' + MODELS[r.model].nama + '</td><td>' + esc(roomDim(r) || '-') + '</td><td class="n">' + rp(c.rooms[i].total) + '</td></tr>'; });
+  if(c.tambah) h += '<tr><td></td><td colspan="3">Biaya tambahan</td><td class="n">' + rp(c.tambah) + '</td></tr>';
+  if(c.disk){
+    h += '<tr class="st"><td colspan="4" class="n">Subtotal</td><td class="n">' + rp(c.sub) + '</td></tr>';
+    h += '<tr class="st"><td colspan="4" class="n">' + diskLabel() + '</td><td class="n">' + rp(-c.disk) + '</td></tr>';
+  }
+  h += '<tr class="tt"><td colspan="4" class="n">TOTAL</td><td class="n">' + rp(c.total) + '</td></tr></tbody></table>';
+  $('#print').innerHTML =
+    '<div class="ph"><img src="' + LOGO_PNG + '" alt=""><div><h1>' + esc(u.nama) + '</h1>' + (u.tagline ? '<div class="tg">' + esc(u.tagline) + '</div>' : '') + (u.slogan ? '<div class="sl">' + esc(u.slogan) + '</div>' : '') + esc(u.alamat) + (u.telp ? '<br>HP/WA: ' + esc(u.telp) : '') + '</div></div><div class="ph2"></div>' +
+    '<h2>RINCIAN ESTIMASI BIAYA PEMASANGAN PLAFON PVC</h2>' +
+    '<div class="pc"><div><b>Kepada:</b> ' + esc(p.nama || '-') + (p.alamat ? '<br>' + esc(p.alamat) : '') + (p.telp ? '<br>HP/WA: ' + esc(p.telp) : '') + '</div>' +
+    '<div style="text-align:right">No: ' + esc(E.no) + '<br>Tanggal: ' + fDate(E.tanggal) + '</div></div>' + h +
+    (noteLines().length ? '<div class="note"><b>Catatan:</b><ol style="margin:4px 0 0;padding-left:18px">' + noteLines().map(t => '<li>' + esc(t) + '</li>').join('') + '</ol></div>' : '') +
+    '<div class="sign"><div>Pelanggan,<div class="sp"></div>( ' + esc(p.nama || '..................') + ' )</div><div>Hormat kami,<div class="sp"></div>( ' + esc(u.nama) + ' )</div></div>';
+}
+window.addEventListener('beforeprint', buildPrint);
+
+/* ---------- PDF (jsPDF + AutoTable, semua file ada di folder lib) ---------- */
+// Logo versi JPEG berlatar putih agar ukuran PDF kecil
+let LOGO_JPG = null;
+(function(){
+  const im = new Image();
+  im.onload = () => {
+    const cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight;
+    const cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0);
+    try{ LOGO_JPG = cv.toDataURL('image/jpeg', 0.9); }catch(err){}
+  };
+  im.src = LOGO_PNG;
+})();
+function buildPDF(){
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF({unit:'mm', format:'a4'});
+  const W = 210, M = 14, u = S.usaha, p = E.pelanggan, c = calcEst(E);
+  const GREEN = [10, 143, 74], ORANGE = [245, 135, 58], SOFT = [232, 245, 237];
+  let y = 12;
+  // Kop
+  const lw = 54, lh = lw * LOGO_RATIO;
+  const ly = y + 2;
+  if(LOGO_JPG) doc.addImage(LOGO_JPG, 'JPEG', M, ly, lw, lh); else doc.addImage(LOGO_PNG, 'PNG', M, ly, lw, lh);
+  const x = M + lw + 6, tw = W - M - x;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(19); doc.setTextColor(...GREEN);
+  doc.text(u.nama || '', x, y + 6);
+  let ty = y + 11;
+  if(u.tagline){
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.6); doc.setTextColor(45);
+    const tl = doc.splitTextToSize(u.tagline, tw); doc.text(tl, x, ty); ty += tl.length * 4.2;
+  }
+  if(u.slogan){
+    doc.setFont('helvetica', 'bolditalic'); doc.setFontSize(10); doc.setTextColor(...ORANGE);
+    doc.text(u.slogan, x, ty); ty += 4.8;
+  }
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.8); doc.setTextColor(60);
+  const al = doc.splitTextToSize(u.alamat || '', tw);
+  doc.text(al, x, ty); ty += al.length * 3.9;
+  if(u.telp){ doc.text('HP/WA: ' + u.telp, x, ty); ty += 3.9; }
+  y = Math.max(y + lh, ty - 2) + 2;
+  doc.setDrawColor(...ORANGE); doc.setLineWidth(1.1); doc.line(M, y, W - M, y);
+  doc.setDrawColor(...GREEN); doc.setLineWidth(0.4); doc.line(M, y + 1.7, W - M, y + 1.7);
+  y += 9;
+  doc.setTextColor(20); doc.setFont('helvetica', 'bold'); doc.setFontSize(12.5);
+  doc.text('RINCIAN ESTIMASI BIAYA PEMASANGAN PLAFON PVC', W / 2, y, {align:'center'});
+  y += 4;
+  doc.autoTable({startY:y, theme:'plain', margin:{left:M, right:M}, styles:{fontSize:9.5, cellPadding:0.8, textColor:30},
+    body:[['Kepada', ': ' + (p.nama || '-'), 'No. Estimasi', ': ' + E.no],
+          ['Alamat', ': ' + (p.alamat || '-'), 'Tanggal', ': ' + fDate(E.tanggal)],
+          ['HP/WA', ': ' + (p.telp || '-'), '', '']],
+    columnStyles:{0:{cellWidth:17, fontStyle:'bold'}, 1:{cellWidth:95}, 2:{cellWidth:25, fontStyle:'bold'}}});
+  y = doc.lastAutoTable.finalY + 4;
+
+  const base = {theme:'grid', margin:{left:M, right:M, bottom:16},
+    styles:{fontSize:8.6, cellPadding:1.8, lineColor:[200, 200, 200], lineWidth:0.2, textColor:30, valign:'middle'},
+    headStyles:{fillColor:SOFT, textColor:20, fontStyle:'bold'},
+    footStyles:{fillColor:[245, 245, 245], textColor:20, fontStyle:'bold'}};
+  const band = (txt, span) => ({content:txt, colSpan:span, styles:{fillColor:GREEN, textColor:255, fontSize:9.5, halign:'left'}});
+  const right = txt => ({content:txt, styles:{halign:'right'}});
+
+  E.ruang.forEach((r, i) => {
+    const rc = c.rooms[i];
+    doc.autoTable(Object.assign({}, base, {startY:y,
+      head:[[band(roomTitle(r, i), 6)], ['No', 'Uraian pekerjaan', 'Perhitungan volume', right('Volume'), right('Harga satuan'), right('Jumlah')]],
+      body:rc.items.map((it, k) => [k + 1, it.label, caraText(it), fNum(it.vol) + ' ' + it.sat, rp(it.harga), rp(it.jml)]),
+      foot:[[{content:'Subtotal ' + (r.nama || ''), colSpan:5, styles:{halign:'right'}}, right(rp(rc.total))]],
+      showFoot:'lastPage',
+      columnStyles:{0:{cellWidth:8, halign:'center'}, 2:{cellWidth:50}, 3:{cellWidth:19, halign:'right'}, 4:{cellWidth:24, halign:'right'}, 5:{cellWidth:27, halign:'right'}}}));
+    y = doc.lastAutoTable.finalY + 5;
+  });
+  if(E.tambahan.length){
+    doc.autoTable(Object.assign({}, base, {startY:y,
+      head:[[band('Biaya tambahan', 3)]],
+      body:E.tambahan.map((x, k) => [k + 1, x.nama || 'Biaya lain', rp(+x.jumlah || 0)]),
+      columnStyles:{0:{cellWidth:8, halign:'center'}, 2:{cellWidth:27, halign:'right'}}}));
+    y = doc.lastAutoTable.finalY + 5;
+  }
+  const foot = [];
+  if(c.disk){
+    foot.push([{content:'Subtotal', colSpan:4, styles:{halign:'right'}}, right(rp(c.sub))]);
+    foot.push([{content:diskLabel(), colSpan:4, styles:{halign:'right'}}, right(rp(-c.disk))]);
+  }
+  foot.push([{content:'TOTAL', colSpan:4, styles:{halign:'right', fillColor:GREEN, textColor:255, fontSize:11}},
+             {content:rp(c.total), styles:{halign:'right', fillColor:GREEN, textColor:255, fontSize:11}}]);
+  const rek = E.ruang.map((r, i) => [huruf(i), r.nama || 'Ruangan', MODELS[r.model].nama, roomDim(r) || '-', rp(c.rooms[i].total)]);
+  if(c.tambah) rek.push(['', {content:'Biaya tambahan', colSpan:3}, rp(c.tambah)]);
+  doc.autoTable(Object.assign({}, base, {startY:y, rowPageBreak:'avoid',
+    head:[[band('Rekap biaya', 5)], ['No', 'Ruangan', 'Model plafon', 'Ukuran', right('Jumlah')]],
+    body:rek, foot:foot, showFoot:'lastPage',
+    columnStyles:{0:{cellWidth:8, halign:'center'}, 4:{cellWidth:30, halign:'right'}}}));
+  y = doc.lastAutoTable.finalY + 6;
+
+  const notes = noteLines();
+  if(y + 42 + notes.length * 4.5 > 282){ doc.addPage(); y = 18; }
+  doc.setFontSize(9); doc.setTextColor(30);
+  if(notes.length){
+    doc.setFont('helvetica', 'bold'); doc.text('Catatan:', M, y); y += 4.5;
+    doc.setFont('helvetica', 'normal');
+    notes.forEach((t, k) => {
+      const tl = doc.splitTextToSize(t, W - 2 * M - 6);
+      doc.text((k + 1) + '.', M + 1, y); doc.text(tl, M + 6, y); y += tl.length * 4.2 + 0.6;
+    });
+  }
+  y += 6; doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+  const c1 = M + 30, c2 = W - M - 30;
+  doc.text('Pelanggan,', c1, y, {align:'center'}); doc.text('Hormat kami,', c2, y, {align:'center'});
+  y += 24;
+  doc.text('( ' + (p.nama || '....................') + ' )', c1, y, {align:'center'});
+  doc.text('( ' + (u.nama || '') + ' )', c2, y, {align:'center'});
+
+  const n = doc.getNumberOfPages();
+  for(let i = 1; i <= n; i++){
+    doc.setPage(i); doc.setFontSize(8); doc.setTextColor(130); doc.setFont('helvetica', 'normal');
+    doc.text((u.nama || '') + ' — ' + E.no, M, 290);
+    doc.text('Halaman ' + i + ' dari ' + n, W - M, 290, {align:'right'});
+  }
+  return doc;
+}
+function waNumber(){
+  let tel = (E.pelanggan.telp || '').replace(/\D/g, '');
+  if(tel.indexOf('0') === 0) tel = '62' + tel.slice(1); else if(tel.indexOf('8') === 0) tel = '62' + tel;
+  return tel;
+}
+function openWA(text){ window.open('https://wa.me/' + waNumber() + '?text=' + encodeURIComponent(text), '_blank'); }
+function pdfMessage(){
+  return 'Halo ' + (E.pelanggan.nama || 'Bapak/Ibu') + ', berikut kami kirimkan rincian estimasi biaya pemasangan plafon PVC (No. ' + E.no +
+    ', total ' + rp(calcEst(E).total) + ') dalam file PDF. Terima kasih. - ' + (S.usaha.nama || '');
+}
+// whatsapp=true: kirim ke WhatsApp; false: hanya simpan file
+async function sendPDF(whatsapp){
+  if(!window.jspdf){ toast('Pembuat PDF tidak termuat. Pastikan folder lib ikut tersalin.'); return; }
+  let blob;
+  try{ blob = buildPDF().output('blob'); }catch(err){ console.error(err); toast('Gagal membuat PDF'); return; }
+  const name = pdfName();
+  const file = new File([blob], name, {type:'application/pdf'});
+  // HP (dan sebagian komputer): menu Bagikan berisi WhatsApp dengan file PDF terlampir
+  if(whatsapp && navigator.canShare && navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file], title:name, text:pdfMessage()}); return; }
+    catch(err){ if(err.name === 'AbortError') return; }
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  if(whatsapp){
+    // Browser tidak bisa melampirkan file ke WhatsApp: buka chat pelanggan, PDF tinggal diseret/dilampirkan
+    openWA(pdfMessage());
+    toast('PDF sudah diunduh. Di WhatsApp, lampirkan file "' + name + '" dari folder Unduhan.', 7000);
+  } else toast('PDF diunduh: ' + name + ' (folder Download/Unduhan)');
+}
+function copyText(t){
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(t).then(() => toast('Teks rincian disalin'), () => copyFallback(t));
+  } else copyFallback(t);
+}
+function copyFallback(t){
+  const a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0';
+  document.body.appendChild(a); a.select();
+  try{ document.execCommand('copy'); toast('Teks rincian disalin'); }catch(e){ toast('Tidak bisa menyalin'); }
+  a.remove();
+}
+
+/* ---------- riwayat ---------- */
+function saveToHistory(){
+  E.dirty = false; E.updated = Date.now();
+  const copy = clone(E), k = H.findIndex(h => h.id === E.id);
+  if(k >= 0) H[k] = copy; else H.push(copy);
+  sset(KEY.hist, H); sset(KEY.draft, E);
+  setStatus(); toast('Tersimpan di riwayat');
+}
+function confirmLeave(){ return !E.dirty || confirm('Estimasi yang sedang dibuka belum disimpan. Lanjutkan tanpa menyimpan?'); }
+function loadEst(e){ E = normEst(e); sset(KEY.draft, E); renderEditor(); showTab('est'); window.scrollTo(0, 0); }
+function renderHistory(){
+  const q = $('#hq').value.trim().toLowerCase();
+  const list = H.slice().sort((a, b) => b.updated - a.updated)
+    .filter(e => !q || (e.no + ' ' + e.pelanggan.nama + ' ' + e.pelanggan.alamat + ' ' + e.pelanggan.telp).toLowerCase().includes(q));
+  $('#hlist').innerHTML = list.length ? list.map(e => {
+    const c = calcEst(e);
+    return '<div class="card hitem" data-id="' + esc(e.id) + '"><div class="hmain"><b>' + esc(e.pelanggan.nama || '(tanpa nama)') + '</b>' +
+      '<span class="muted sm">' + esc(e.no) + ' · ' + fDate(e.tanggal) + ' · ' + e.ruang.length + ' ruangan</span>' +
+      (e.pelanggan.alamat ? '<span class="muted sm">' + esc(e.pelanggan.alamat) + '</span>' : '') + '</div>' +
+      '<div class="htot">' + rp(c.total) + '</div>' +
+      '<div class="hact"><button class="btn sm" data-act="open">Buka</button><button class="btn ghost sm" data-act="dup">Duplikat</button><button class="btn ghost sm danger" data-act="del">Hapus</button></div></div>';
+  }).join('') : '<p class="empty">' + (H.length ? 'Tidak ada yang cocok.' : 'Belum ada estimasi tersimpan.<br>Tekan 💾 Simpan setelah membuat estimasi.') + '</p>';
+}
+$('#hq').addEventListener('input', renderHistory);
+$('#hlist').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const id = b.closest('[data-id]').dataset.id, h = H.find(x => x.id === id); if(!h) return;
+  if(b.dataset.act === 'open'){ if(confirmLeave()){ const c = clone(h); c.dirty = false; loadEst(c); } }
+  else if(b.dataset.act === 'dup'){
+    if(!confirmLeave()) return;
+    const c = clone(h); c.id = uid(); c.no = genNo(); c.tanggal = today(); c.dirty = true; c.updated = Date.now();
+    loadEst(c); toast('Salinan dibuat — jangan lupa simpan');
+  } else if(b.dataset.act === 'del'){
+    if(!confirm('Hapus estimasi ' + h.no + ' (' + (h.pelanggan.nama || 'tanpa nama') + ') dari riwayat?')) return;
+    H = H.filter(x => x.id !== id); sset(KEY.hist, H); renderHistory(); setStatus();
+  }
+});
+
+/* ---------- pengaturan ---------- */
+function renderSettings(){
+  $$('[data-s]').forEach(inp => {
+    const [g, k] = inp.dataset.s.split('.');
+    inp.value = inp.hasAttribute('data-money') ? vMoney(S[g][k]) : (S[g][k] || '');
+  });
+}
+$('#v-set').addEventListener('input', e => {
+  const t = e.target; if(!t.dataset.s) return;
+  const [g, k] = t.dataset.s.split('.');
+  S[g][k] = t.hasAttribute('data-money') ? pMoney(t.value) : t.value;
+  sset(KEY.set, S); renderBanner();
+});
+function renderBanner(){
+  const kosong = !S.harga.datar && !S.harga.single && !S.harga.double && !S.harga.triple && !S.harga.fourple && !S.harga.lis;
+  $('#price-banner').innerHTML = kosong ? '<div class="banner">Harga plafon dan lis belum diisi. Isi sekali di Pengaturan, nanti otomatis terpakai.<button class="btn sm" data-act="goSet">Isi harga</button></div>' : '';
+}
+function applyPrices(){
+  E.ruang.forEach(r => { r.hPlafon = S.harga[r.model]; r.hLis = S.harga.lis; r.hDrop = S.harga.drop; });
+  renderEditor(); changed(); toast('Harga diterapkan ke estimasi yang sedang dibuka');
+}
+function exportData(){
+  const data = {app:'estimasi-plafon-pvc', versi:1, dibuat:new Date().toISOString(), settings:S, history:H};
+  const blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'cadangan-plafon-' + today() + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+$('#importFile').addEventListener('change', e => {
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const d = JSON.parse(rd.result);
+      if(!d || d.app !== 'estimasi-plafon-pvc') throw new Error('format');
+      let add = 0, upd = 0;
+      (d.history || []).forEach(h => {
+        if(!h || !h.id || !Array.isArray(h.ruang)) return;
+        const k = H.findIndex(x => x.id === h.id);
+        normEst(h);
+        if(k < 0){ H.push(h); add++; } else if((h.updated || 0) > (H[k].updated || 0)){ H[k] = h; upd++; }
+      });
+      sset(KEY.hist, H);
+      if(d.settings && confirm('Ganti juga pengaturan harga & data usaha dengan yang ada di file cadangan?')){
+        S = {usaha:Object.assign({}, DEF.usaha, d.settings.usaha || {}), harga:Object.assign({}, DEF.harga, d.settings.harga || {})};
+        sset(KEY.set, S); renderSettings(); renderBanner();
+      }
+      renderHistory(); setStatus();
+      toast('Dipulihkan: ' + add + ' estimasi baru, ' + upd + ' diperbarui');
+    }catch(err){ alert('File cadangan tidak dikenali.'); }
+    e.target.value = '';
+  };
+  rd.readAsText(f);
+});
+
+/* ---------- navigasi & tombol global ---------- */
+function showTab(t){
+  $$('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  $$('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + t));
+  if(t === 'hist') renderHistory();
+  if(t === 'set') renderSettings();
+}
+$('nav.tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if(b) showTab(b.dataset.tab); });
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if(!b || ed.contains(b) || $('#hlist').contains(b)) return;
+  switch(b.dataset.act){
+    case 'newEst': if(confirmLeave()){ loadEst(newEst()); toast('Estimasi baru'); } break;
+    case 'copyText': copyText(buildText()); break;
+    case 'save': saveToHistory(); break;
+    case 'print': buildPrint(); window.print(); break;
+    case 'pdf': sendPDF(true); break;
+    case 'pdfSave': sendPDF(false); break;
+    case 'wa': openWA(buildText()); break;
+    case 'goSet': showTab('set'); break;
+    case 'applyPrices': if(confirm('Ganti semua harga di estimasi yang sedang dibuka dengan harga default?')) applyPrices(); break;
+    case 'export': exportData(); break;
+    case 'import': $('#importFile').click(); break;
+  }
+});
+
+renderEditor();
+renderBanner();
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
