@@ -1,5 +1,5 @@
 // Naikkan versi ini setiap kali file aplikasi diubah
-const CACHE = 'plafon-pvc-v8';
+const CACHE = 'plafon-pvc-v9';
 const FILES = ['./', './index.html', './manifest.webmanifest', './logo.png', './logo.js', './icon-192.png', './icon-512.png',
   './lib/jspdf.umd.min.js', './lib/jspdf.plugin.autotable.min.js'];
 

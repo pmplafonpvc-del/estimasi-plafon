@@ -70,6 +70,10 @@ button.tag{cursor:pointer;background:var(--warn-bg);color:var(--warn)}
 .dgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .dgrid .dl{grid-column:1/-1;font-weight:700;font-size:14px;display:flex;gap:6px;align-items:center}
 .dgrid .fld{margin-bottom:8px}
+.dgrid .dl .icon{margin-left:auto;width:32px;height:32px}
+.chk{display:flex;align-items:center;gap:10px;margin:-4px 0 12px;font-weight:600;font-size:15px;cursor:pointer}
+.chk input{width:22px;height:22px;min-height:0;accent-color:var(--accent)}
+.komb{border-top:1px dashed var(--line);padding-top:10px;margin-bottom:6px}
 .prices{border-top:1px dashed var(--line);padding-top:10px}
 .bd{background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:4px}
 .line{display:flex;justify-content:space-between;gap:10px;padding:5px 0;align-items:baseline}
@@ -181,6 +185,7 @@ button.tag{cursor:pointer;background:var(--warn-bg);color:var(--warn)}
         <label class="fld"><span>Plafon fourple drop /m²</span><input inputmode="numeric" data-s="harga.fourple" data-money></label>
         <label class="fld"><span>Lis dinding /m</span><input inputmode="numeric" data-s="harga.lis" data-money></label>
         <label class="fld"><span>Drop per tingkat /m</span><input inputmode="numeric" data-s="harga.drop" data-money></label>
+        <label class="fld"><span>Kombinasi warna /m</span><input inputmode="numeric" data-s="harga.komb" data-money></label>
       </div>
       <button class="btn ghost sm" data-act="applyPrices">Terapkan harga ini ke estimasi yang sedang dibuka</button>
     </div>
@@ -212,6 +217,7 @@ button.tag{cursor:pointer;background:var(--warn-bg);color:var(--warn)}
         <li>Plafon PVC terpasang = luas × harga plafon /m² (sesuai model).</li>
         <li>Keliling drop tiap tingkat = 2 × (panjang + lebar drop). Bisa diubah manual bila bentuk drop tidak kotak.</li>
         <li>Drop tingkat 1 / 2 / 3 / 4 = keliling drop tingkat itu × harga drop /m.</li>
+        <li>Model kombinasi warna: tiap area kombinasi = 2 × (panjang + lebar) = keliling × harga kombinasi /m. Harga plafon /m² sama dengan model biasanya.</li>
         <li>Variasi plafon dan kelistrikan (bila ada) = volume × harga satuan, masuk ke subtotal ruangannya.</li>
         <li>Lis dinding = keliling × harga lis /m.</li>
         <li>Total = jumlah semua ruangan + biaya tambahan − diskon.</li>
@@ -253,7 +259,7 @@ const LISTS = {
 const KEY = {set:'pvc_settings', hist:'pvc_history', draft:'pvc_draft'};
 const DEF = {
   usaha:{nama:'PM PLAFON PVC', tagline:'Pusat Penjualan dan Pemasangan Plafon PVC, Interior dan Baja Ringan', slogan:'Termurah - Terlengkap - Terpercaya', alamat:'Jl. Kalangan-Pancar Km. 2 Dilem, Kebonrejo, Salaman, Magelang 56162', telp:'085700003223', kaki:'Estimasi ini dapat berubah sesuai ukuran dan kondisi di lapangan.\nGaransi 3 Tahun dari tanggal pemasangan.\nMohon pastikan untuk diperiksa kembali sebelum menyetujui.'},
-  harga:{datar:0, single:0, double:0, triple:0, fourple:0, lis:0, drop:80000}
+  harga:{datar:0, single:0, double:0, triple:0, fourple:0, lis:0, drop:80000, komb:0}
 };
 
 /* ---------- util ---------- */
@@ -303,6 +309,8 @@ function normRoom(r){
   for(let k = 0; k < 4; k++) r.drop[k] = +r.drop[k] || 0;
   if(!Array.isArray(r.dropP)){ r.dropP = [0, 0, 0, 0]; r.dropL = [0, 0, 0, 0]; r.dropMan = r.drop.map(v => v > 0); }
   r.variasi = r.variasi || []; r.listrik = r.listrik || [];
+  r.komb = !!r.komb; r.kombArea = r.kombArea || [];
+  if(r.hKomb == null) r.hKomb = S.harga.komb;
   return r;
 }
 function normEst(e){
@@ -317,6 +325,7 @@ function newRoom(nama, model){
   model = model || 'datar';
   return {id:uid(), nama:nama, model:model, p:0, l:0, luas:0, keliling:0, manLuas:false, manKel:false,
     hPlafon:S.harga[model], hLis:S.harga.lis, hDrop:S.harga.drop, drop:[0, 0, 0, 0], dropP:[0, 0, 0, 0], dropL:[0, 0, 0, 0], dropMan:[false, false, false, false],
+    komb:false, kombArea:[], hKomb:S.harga.komb,
     variasi:[], listrik:[]};
 }
 function newEst(){
@@ -324,6 +333,7 @@ function newEst(){
     ruang:[newRoom('Ruang 1')], tambahan:[], diskon:{tipe:'nominal', nilai:0}, catatan:S.usaha.kaki, catatanInit:true,
     updated:Date.now(), dirty:false};
 }
+function modelName(r){ return MODELS[r.model].nama + (r.komb ? ' Kombinasi Warna' : ''); }
 function calcRoom(r){
   const n = MODELS[r.model].drop, kotak = r.p && r.l;
   // cara: rumus volume yang ditampilkan ke konsumen; ukur: volume dari ukuran ruangan
@@ -334,6 +344,8 @@ function calcRoom(r){
     items.push({label:'Drop tingkat ' + (k + 1) + ' (keliling)', ukur:true, vol:r.drop[k] || 0, sat:'m', harga:r.hDrop,
       cara:!r.dropMan[k] && dp && dl ? '2 × (' + fNum(dp) + ' m + ' + fNum(dl) + ' m)' : ''});
   }
+  if(r.komb) r.kombArea.forEach((a, k) => items.push({label:'Kombinasi warna ' + (k + 1) + ' (keliling)', ukur:true, vol:a.kel || 0, sat:'m', harga:r.hKomb,
+    cara:!a.man && a.p && a.l ? '2 × (' + fNum(a.p) + ' m + ' + fNum(a.l) + ' m)' : ''}));
   items.push({label:'Lis dinding (keliling ruangan)', ukur:true, vol:r.keliling, sat:'m', harga:r.hLis,
     cara:!r.manKel && kotak ? '2 × (' + fNum(r.p) + ' m + ' + fNum(r.l) + ' m)' : ''});
   Object.keys(LISTS).forEach(k => r[k].forEach(v => items.push({label:LISTS[k].label + ': ' + (v.nama || LISTS[k].judul.toLowerCase()), vol:+v.vol || 0, sat:v.sat || '', harga:+v.harga || 0, cara:''})));
@@ -388,6 +400,7 @@ function roomHTML(r, i){
       '<button class="icon" data-act="dupRoom" title="Duplikat ruangan" aria-label="Duplikat ruangan">⧉</button>' +
       '<button class="icon danger" data-act="delRoom" title="Hapus ruangan" aria-label="Hapus ruangan">✕</button></div>' +
     '<div class="seg">' + Object.keys(MODELS).map(k => '<button data-act="model" data-m="' + k + '" class="' + (r.model === k ? 'on' : '') + '">' + MODELS[k].short + '</button>').join('') + '</div>' +
+    '<label class="chk"><input type="checkbox" data-f="komb"' + (r.komb ? ' checked' : '') + '> Kombinasi warna</label>' +
     '<div class="grid2">' +
       '<label class="fld"><span>Panjang (m)</span><input inputmode="decimal" data-f="p" value="' + vNum(r.p) + '" placeholder="0"></label>' +
       '<label class="fld"><span>Lebar (m)</span><input inputmode="decimal" data-f="l" value="' + vNum(r.l) + '" placeholder="0"></label>' +
@@ -395,9 +408,16 @@ function roomHTML(r, i){
       '<div class="fld"><span>Keliling lis (m) <span data-tag="kel">' + tagHTML(r.manKel, 'kel') + '</span></span><input inputmode="decimal" data-f="keliling" value="' + vNum(r.keliling) + '" placeholder="0" aria-label="Keliling lis"></div>' +
     '</div>' +
     (n ? '<div class="drops">' + drops + '</div>' : '') +
+    (r.komb ? '<div class="komb">' + r.kombArea.map((a, k) => '<div class="dgrid"><div class="dl">Kombinasi warna ' + (k + 1) + ' <span data-tag="k' + k + '">' + tagHTML(a.man, 'k' + k) + '</span>' +
+        '<button class="icon danger" data-act="delKomb" data-k="' + k + '" aria-label="Hapus area kombinasi">✕</button></div>' +
+      '<label class="fld"><span>Panjang (m)</span><input inputmode="decimal" data-f="kp' + k + '" value="' + vNum(a.p) + '" placeholder="0"></label>' +
+      '<label class="fld"><span>Lebar (m)</span><input inputmode="decimal" data-f="kl' + k + '" value="' + vNum(a.l) + '" placeholder="0"></label>' +
+      '<label class="fld"><span>Keliling (m)</span><input inputmode="decimal" data-f="kk' + k + '" value="' + vNum(a.kel) + '" placeholder="0"></label></div>').join('') +
+      '<button class="btn ghost sm" data-act="addKomb">+ Tambah area kombinasi</button></div>' : '') +
     '<div class="grid3 prices">' +
       '<label class="fld"><span>Harga plafon /m²</span><input inputmode="numeric" data-money data-f="hPlafon" value="' + vMoney(r.hPlafon) + '" placeholder="0"></label>' +
       (n ? '<label class="fld"><span>Harga drop /m</span><input inputmode="numeric" data-money data-f="hDrop" value="' + vMoney(r.hDrop) + '" placeholder="0"></label>' : '') +
+      (r.komb ? '<label class="fld"><span>Harga kombinasi /m</span><input inputmode="numeric" data-money data-f="hKomb" value="' + vMoney(r.hKomb) + '" placeholder="0"></label>' : '') +
       '<label class="fld"><span>Harga lis /m</span><input inputmode="numeric" data-money data-f="hLis" value="' + vMoney(r.hLis) + '" placeholder="0"></label>' +
     '</div>' +
     Object.keys(LISTS).map(k => listHTML(r, k)).join('') +
@@ -470,7 +490,7 @@ function updateRoom(i, skipSum){
 function updateSummary(){
   const c = calcEst(E);
   let h = '<div class="sec-title">Ringkasan</div>';
-  h += E.ruang.map((r, i) => '<div class="line"><span>' + (i + 1) + '. ' + esc(r.nama || 'Ruangan') + '<small>' + MODELS[r.model].nama + '</small></span><b>' + rp(c.rooms[i].total) + '</b></div>').join('');
+  h += E.ruang.map((r, i) => '<div class="line"><span>' + (i + 1) + '. ' + esc(r.nama || 'Ruangan') + '<small>' + modelName(r) + '</small></span><b>' + rp(c.rooms[i].total) + '</b></div>').join('');
   if(c.tambah) h += '<div class="line"><span>Biaya tambahan</span><b>' + rp(c.tambah) + '</b></div>';
   if(c.disk){
     h += '<div class="line sub"><span>Subtotal</span><b>' + rp(c.sub) + '</b></div>';
@@ -488,6 +508,12 @@ function autoDrop(r, k, card){
   if(r.dropMan[k]) return;
   r.drop[k] = r2(2 * (r.dropP[k] + r.dropL[k]));
   $('[data-f="dk' + k + '"]', card).value = vNum(r.drop[k]);
+}
+function autoKomb(r, k, card){
+  const a = r.kombArea[k];
+  if(a.man) return;
+  a.kel = r2(2 * (a.p + a.l));
+  $('[data-f="kk' + k + '"]', card).value = vNum(a.kel);
 }
 function setTag(card, w, man){ $('[data-tag="' + w + '"]', card).innerHTML = tagHTML(man, w); }
 
@@ -515,6 +541,16 @@ function onRoomInput(i, f, t, card){
   else if(f === 'p' || f === 'l'){ r[f] = pNum(t.value); autoCalc(r, card); }
   else if(f === 'luas'){ r.luas = pNum(t.value); if(!r.manLuas){ r.manLuas = true; setTag(card, 'luas', true); } }
   else if(f === 'keliling'){ r.keliling = pNum(t.value); if(!r.manKel){ r.manKel = true; setTag(card, 'kel', true); } }
+  else if(f === 'komb'){
+    r.komb = t.checked;
+    if(r.komb && !r.kombArea.length) r.kombArea.push({p:0, l:0, kel:0, man:false});
+    card.outerHTML = roomHTML(r, i); updateRoom(i); changed(); return;
+  }
+  else if(/^k[plk]\d+$/.test(f)){
+    const k = +f.slice(2), a = r.kombArea[k];
+    if(f[1] === 'k'){ a.kel = pNum(t.value); if(!a.man){ a.man = true; setTag(card, 'k' + k, true); } }
+    else { a[f[1]] = pNum(t.value); autoKomb(r, k, card); }
+  }
   else if(/^d[plk]\d$/.test(f)){
     const k = +f[2];
     if(f[1] === 'k'){ r.drop[k] = pNum(t.value); if(!r.dropMan[k]){ r.dropMan[k] = true; setTag(card, 'd' + k, true); } }
@@ -564,11 +600,17 @@ ed.addEventListener('click', e => {
     r.model = m;
     if(S.harga[m]) r.hPlafon = S.harga[m];
     card.outerHTML = roomHTML(r, i); updateRoom(i); changed();
+  } else if(act === 'addKomb' || act === 'delKomb'){
+    const r = E.ruang[i];
+    if(act === 'addKomb') r.kombArea.push({p:0, l:0, kel:0, man:false}); else r.kombArea.splice(+b.dataset.k, 1);
+    card.outerHTML = roomHTML(r, i); updateRoom(i); changed();
+    if(act === 'addKomb') $('[data-f="kp' + (r.kombArea.length - 1) + '"]', roomCard(i)).focus();
   } else if(act === 'auto'){
     const r = E.ruang[i];
     const w = b.dataset.w;
     if(w === 'luas') r.manLuas = false;
     else if(w === 'kel') r.manKel = false;
+    else if(w[0] === 'k'){ r.kombArea[+w.slice(1)].man = false; autoKomb(r, +w.slice(1), card); }
     else { r.dropMan[+w.slice(1)] = false; autoDrop(r, +w.slice(1), card); }
     autoCalc(r, card); setTag(card, w, false); updateRoom(i); changed();
   } else if(act === 'addItem'){
@@ -601,7 +643,7 @@ document.addEventListener('focusin', e => {
 /* ---------- teks WA & cetak ---------- */
 function roomDim(r){ return r.p && r.l ? fNum(r.p) + ' m × ' + fNum(r.l) + ' m' : ''; }
 function huruf(i){ return String.fromCharCode(65 + (i % 26)); }
-function roomTitle(r, i){ const dim = roomDim(r); return huruf(i) + '. ' + (r.nama || 'Ruangan') + ' — ' + MODELS[r.model].nama + (dim ? ' (' + dim + ')' : ''); }
+function roomTitle(r, i){ const dim = roomDim(r); return huruf(i) + '. ' + (r.nama || 'Ruangan') + ' — ' + modelName(r) + (dim ? ' (' + dim + ')' : ''); }
 function noteLines(){ return String(E.catatan || '').split('\n').map(t => t.trim()).filter(Boolean); }
 function diskLabel(){ return 'Diskon' + (E.diskon.tipe === 'persen' ? ' ' + fNum(E.diskon.nilai) + '%' : ''); }
 function pdfName(){ return ('Estimasi Plafon - ' + (E.pelanggan.nama || E.no)).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim() + '.pdf'; }
@@ -630,7 +672,7 @@ function buildText(){
     E.tambahan.forEach(x => L.push('• ' + (x.nama || 'Biaya lain') + ': ' + rp(+x.jumlah || 0)));
   }
   L.push('', '*REKAP BIAYA*');
-  E.ruang.forEach((r, i) => L.push(huruf(i) + '. ' + (r.nama || 'Ruangan') + ' (' + MODELS[r.model].nama + '): ' + rp(c.rooms[i].total)));
+  E.ruang.forEach((r, i) => L.push(huruf(i) + '. ' + (r.nama || 'Ruangan') + ' (' + modelName(r) + '): ' + rp(c.rooms[i].total)));
   if(c.tambah) L.push('Biaya tambahan: ' + rp(c.tambah));
   if(c.disk) L.push('Subtotal: ' + rp(c.sub), diskLabel() + ': ' + rp(-c.disk));
   L.push('*TOTAL: ' + rp(c.total) + '*');
@@ -656,7 +698,7 @@ function buildPrint(){
     h += '</tbody></table>';
   }
   h += '<h3>Rekap biaya</h3><table><thead><tr><th style="width:28px">No</th><th>Ruangan</th><th>Model plafon</th><th>Ukuran</th><th style="width:100px">Jumlah</th></tr></thead><tbody>';
-  E.ruang.forEach((r, i) => { h += '<tr><td class="n">' + huruf(i) + '</td><td>' + esc(r.nama || 'Ruangan') + '</td><td>' + MODELS[r.model].nama + '</td><td>' + esc(roomDim(r) || '-') + '</td><td class="n">' + rp(c.rooms[i].total) + '</td></tr>'; });
+  E.ruang.forEach((r, i) => { h += '<tr><td class="n">' + huruf(i) + '</td><td>' + esc(r.nama || 'Ruangan') + '</td><td>' + modelName(r) + '</td><td>' + esc(roomDim(r) || '-') + '</td><td class="n">' + rp(c.rooms[i].total) + '</td></tr>'; });
   if(c.tambah) h += '<tr><td></td><td colspan="3">Biaya tambahan</td><td class="n">' + rp(c.tambah) + '</td></tr>';
   if(c.disk){
     h += '<tr class="st"><td colspan="4" class="n">Subtotal</td><td class="n">' + rp(c.sub) + '</td></tr>';
@@ -756,7 +798,7 @@ function buildPDF(){
   }
   foot.push([{content:'TOTAL', colSpan:4, styles:{halign:'right', fillColor:GREEN, textColor:255, fontSize:11}},
              {content:rp(c.total), styles:{halign:'right', fillColor:GREEN, textColor:255, fontSize:11}}]);
-  const rek = E.ruang.map((r, i) => [huruf(i), r.nama || 'Ruangan', MODELS[r.model].nama, roomDim(r) || '-', rp(c.rooms[i].total)]);
+  const rek = E.ruang.map((r, i) => [huruf(i), r.nama || 'Ruangan', modelName(r), roomDim(r) || '-', rp(c.rooms[i].total)]);
   if(c.tambah) rek.push(['', {content:'Biaya tambahan', colSpan:3}, rp(c.tambah)]);
   doc.autoTable(Object.assign({}, base, {startY:y, rowPageBreak:'avoid',
     head:[[band('Rekap biaya', 5)], ['No', 'Ruangan', 'Model plafon', 'Ukuran', right('Jumlah')]],
@@ -890,7 +932,7 @@ function renderBanner(){
   $('#price-banner').innerHTML = kosong ? '<div class="banner">Harga plafon dan lis belum diisi. Isi sekali di Pengaturan, nanti otomatis terpakai.<button class="btn sm" data-act="goSet">Isi harga</button></div>' : '';
 }
 function applyPrices(){
-  E.ruang.forEach(r => { r.hPlafon = S.harga[r.model]; r.hLis = S.harga.lis; r.hDrop = S.harga.drop; });
+  E.ruang.forEach(r => { r.hPlafon = S.harga[r.model]; r.hLis = S.harga.lis; r.hDrop = S.harga.drop; r.hKomb = S.harga.komb; });
   renderEditor(); changed(); toast('Harga diterapkan ke estimasi yang sedang dibuka');
 }
 function exportData(){
